@@ -19,7 +19,7 @@ namespace DesktopApp2
 {
     public partial class Form1 : Form
     {
-        Graph graph = new Graph("grapf");
+        Graph graph = new Graph("graph");
         GrafMatriks grafMatriks;
         public Form1()
         {
@@ -28,17 +28,24 @@ namespace DesktopApp2
         
         private void button1_Click(object sender, EventArgs e)
         {
-            // grafMatriks.printGraf();
             int dir = Convert.ToInt32(Direction.Text);
             int jose = Convert.ToInt32(JoseAddress.Text) - 1;
             int ferd = Convert.ToInt32(FerdiantStart.Text) - 1;
-            grafMatriks.solve(dir, jose, ferd);
-        }
-
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-            
-        }
+            string a = Convert.ToString(dir);
+            string b = Convert.ToString(jose+1);
+            string c = Convert.ToString(ferd+1);
+            string d;
+            Ways tmp = grafMatriks.solve(dir, jose, ferd);
+            if (tmp.getPass())
+            {
+                d = "YA";
+            }
+            else
+            {
+                d = "TIDAK";
+            }
+            ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + d+' ' +tmp.getJalur());
+        } 
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -79,10 +86,57 @@ namespace DesktopApp2
                 row = Convert.ToInt32(a) - 1;
                 col = Convert.ToInt32(b) - 1;
                 graph.AddEdge(a, b);
-                Console.WriteLine(Convert.ToString(row) + ' ' + Convert.ToString(col));
                 grafMatriks.setGraf(row,col,true);
             }
             gViewer1.Graph = graph;
+        }
+
+        private void inputClick(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Browse Text Files",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "txt",
+                Filter = "txt files (*.txt)|*.txt",
+                FilterIndex = 2,
+                RestoreDirectory = true,
+
+                ReadOnlyChecked = true,
+                ShowReadOnly = true
+            };
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                FileDir.Text = openFileDialog1.FileName;
+            }
+            // Menyiapkan file untuk dibaca
+            string filename = openFileDialog1.FileName;
+            string[] filelines = File.ReadAllLines(filename);
+            // Queries
+            for (int i = 1; i < filelines.Length; i++)
+            {
+                int dir = Convert.ToInt32(filelines[i].Split(' ')[0]);
+                int jose = Convert.ToInt32(filelines[i].Split(' ')[1])-1;
+                int ferd = Convert.ToInt32(filelines[i].Split(' ')[2])-1;
+                string a = Convert.ToString(dir);
+                string b = Convert.ToString(jose+1);
+                string c = Convert.ToString(ferd+1);
+                string d;
+                Ways tmp = grafMatriks.solve(dir, jose, ferd);
+                if (tmp.getPass())
+                {
+                    d = "YA";
+                }
+                else
+                {
+                    d = "TIDAK";
+                }
+                ListBox.Items.Add(a+' '+b+' '+c+' '+d+' '+tmp.getJalur());
+            }
         }
 
         private void initComboBox(int size)
@@ -91,6 +145,8 @@ namespace DesktopApp2
             {
                 JoseAddress.Items.Add(i);
                 FerdiantStart.Items.Add(i);
+                graph.AddNode(Convert.ToString(i));
+                graph.FindNode(Convert.ToString(i)).Attr.Shape = Shape.Circle;
             }
         }
 
@@ -108,103 +164,109 @@ namespace DesktopApp2
     {
         private bool[][] graph;
         private int size;
-        
-        public void solve(int dir, int jose, int ferd)
+
+        public Ways solve(int dir, int jose, int ferd)
         {
-            Console.Write(jose); Console.Write(' '); Console.WriteLine(ferd);
+            Ways inpw = new Ways();
             if (dir == 1)
             {
-                Console.WriteLine(Convert.ToString(solveAway(jose, ferd)));
+                inpw = solveAway(jose, ferd);
+                inpw.addToJalur(ferd);
+                return inpw;
             }
             else
             {
-                Console.WriteLine(Convert.ToString(solveTowards(jose, ferd)));
+                inpw = solveTowards(jose, ferd);
+                inpw.addToJalur(ferd);
+                return inpw;
             }
         }
-        
-        public bool solveTowards(int jose, int ferd)
+
+        public Ways solveTowards(int jose, int ferd)
         {
+            Ways inpw = new Ways();
             if (ferd == jose)
             {
-                return true;
+                inpw.setPass(true);
+                return inpw;
             }
             else
             {
-                if (ferd != 1)
+                if (ferd != 0)
                 {
-                    bool flag = false;
                     for (int i = 0; i < size; i++)
                     {
                         if (neighbor(ferd, i))
                         {
+                            setGraf(ferd, i, false);
                             if (canReachThrough(ferd, i, 0))
                             {
-                                setGraf(ferd, i, false);
-                                flag = solveTowards(jose, i);
-                                setGraf(ferd, i, true);
-                                if (flag)
+                                inpw = solveTowards(jose, i);
+                                inpw.removeJalur();
+                                if (inpw.getPass())
                                 {
+                                    inpw.addToJalur(i);
+                                    setGraf(ferd, i, true);
                                     break;
                                 }
                             }
+                            setGraf(ferd, i, true);
                         }
                     }
-                    Console.WriteLine("Tidak Bisa");
-                    return flag;
+                    return inpw;
                 }
                 else
                 {
-                    Console.WriteLine("Tidak Bisa");
-                    return false;
+                    return inpw;
                 }
             }
         }
 
-        public bool solveAway(int jose, int ferd)
+        public Ways solveAway(int jose, int ferd)
         {
+
+            Ways inpw = new Ways();
             if (ferd == jose)
             {
-                Console.WriteLine("Bisa");
-                return true;
+                inpw.setPass(true);
+                return inpw;
             }
             else
             {
                 if (haveNeighbor(ferd))
                 {
-                    bool flag = false;
                     for (int i = 0; i < size; i++)
                     {
                         if (neighbor(ferd, i))
                         {
+                            setGraf(ferd, i, false);
                             if (!canReachThrough(ferd, i, 0))
                             {
-                                setGraf(ferd, i, false);
-                                flag = solveAway(jose, i);
-                                setGraf(ferd, i, true);
-                                if (flag){
+                                inpw = solveAway(jose, i);
+                                inpw.removeJalur();
+                                if (inpw.getPass())
+                                {
+                                    inpw.addToJalur(i);
+                                    setGraf(ferd, i, true);
                                     break;
                                 }
                             }
+                            setGraf(ferd, i, true);
                         }
                     }
-                    Console.WriteLine("Tidak Bisa");
-                    return flag;
+                    return inpw;
                 }
                 else
                 {
-                    Console.WriteLine("Tidak Bisa");
-                    return false;
+                    return inpw;
                 }
             }
         }
-        
+
         public bool canReachThrough(int node1, int node2, int target)
         {
-            Console.Write(node1); Console.Write(" tes "); Console.Write(node2); Console.WriteLine();
             if (haveNeighbor(node2))
             {
-                Console.Write("Have Neighbor");
-                Console.WriteLine();
                 if (neighbor(node2, target))
                 {
                     return true;
@@ -214,8 +276,6 @@ namespace DesktopApp2
                     bool flag = false;
                     for(int i = 0; i < size; i++)
                     {
-                        Console.Write(node2); Console.Write(' '); Console.Write(i); Console.Write(' '); Console.Write(target);
-                        Console.WriteLine();
                         if (neighbor(node2, i) && (node1 != i))
                         {
                             if (canReachThrough(node2, i, target))
@@ -229,7 +289,6 @@ namespace DesktopApp2
             }
             else
             {
-                Console.Write("Don't Have Neighbor");
                 return false;
             }
         }
@@ -301,6 +360,63 @@ namespace DesktopApp2
                 }
                 Console.WriteLine();
             }
+        }
+    }
+    public class Quest
+    {
+        private int dir;
+        private int jose;
+        private int ferd;
+
+        public Quest(int di, int jos, int fer)
+        {
+            dir = di;
+            jose = jos;
+            ferd = fer;
+        }
+
+        public int getDir() { return dir; }
+        public int getJose() { return jose; }
+        public int getFerd() { return ferd; }
+    }
+    public class Ways
+    {
+        private string jalur;
+        private bool pass;
+        public Ways()
+        {
+            pass = false;
+            jalur = "";
+        }
+        public bool getPass()
+        {
+            return pass;
+        }
+        public string getJalur()
+        {
+            return jalur;
+        }
+        public void setPass(bool _b)
+        {
+            pass = _b;
+        }
+        public void addToJalur(int _s)
+        {
+            jalur =  Convert.ToString(_s+1) +" "+jalur;
+        }
+        public void addListJalur(string _jalur)
+        {
+            jalur = jalur + " " + _jalur;
+        }
+        public void removeJalur()
+        {
+            string[] tmp = jalur.Split(' ');
+            string stmp = "";
+            for (int i = 0; i < tmp.Length-1; i++)
+            {
+                stmp += tmp[i];
+            }
+            jalur = stmp;
         }
     }
 }
