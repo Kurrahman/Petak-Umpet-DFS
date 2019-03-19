@@ -19,7 +19,7 @@ namespace DesktopApp2
 {
     public partial class Form1 : Form
     {
-        Graph graph = new Graph("graph");
+        Graph graph;
         GrafMatriks grafMatriks;
         public Form1()
         {
@@ -34,17 +34,15 @@ namespace DesktopApp2
             string a = Convert.ToString(dir);
             string b = Convert.ToString(jose+1);
             string c = Convert.ToString(ferd+1);
-            string d;
             Ways tmp = grafMatriks.solve(dir, jose, ferd);
             if (tmp.getPass())
             {
-                d = "YA";
+                ListBox.Items.Add(a + ' ' + b + ' ' + c + " YA " + tmp.getJalur());
             }
             else
             {
-                d = "TIDAK";
+                ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + " TIDAK");
             }
-            ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + d+' ' +tmp.getJalur());
         } 
 
         private void button2_Click(object sender, EventArgs e)
@@ -73,6 +71,7 @@ namespace DesktopApp2
             string filename = openFileDialog1.FileName;
             string[] filelines = File.ReadAllLines(filename);
             // Inisialisasi Graph
+            graph = new Graph("graph");
             grafMatriks = new GrafMatriks(Convert.ToInt32(filelines[0].Trim()));
             initComboBox(Convert.ToInt32(filelines[0].Trim()));
             for (int i = 1; i < filelines.Length; i++)
@@ -125,17 +124,15 @@ namespace DesktopApp2
                 string a = Convert.ToString(dir);
                 string b = Convert.ToString(jose+1);
                 string c = Convert.ToString(ferd+1);
-                string d;
                 Ways tmp = grafMatriks.solve(dir, jose, ferd);
                 if (tmp.getPass())
                 {
-                    d = "YA";
+                    ListBox.Items.Add(a + ' ' + b + ' ' + c + " YA " + tmp.getJalur());
                 }
                 else
                 {
-                    d = "TIDAK";
+                    ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + " TIDAK");
                 }
-                ListBox.Items.Add(a+' '+b+' '+c+' '+d+' '+tmp.getJalur());
             }
         }
 
@@ -158,6 +155,33 @@ namespace DesktopApp2
         private void FerdiantStart_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void ListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateGraph(object sender, EventArgs e)
+        {
+            gViewer1.Graph = graph;
+            string[] nodes = ListBox.GetItemText(ListBox.SelectedItem).Trim().Split(' ');
+            for (int i = 0; i < graph.NodeCount; i++)
+            {
+                Node tmp = gViewer1.Graph.FindNode(Convert.ToString(i+1));
+                tmp.Attr.FillColor = Microsoft.Msagl.Drawing.Color.White;
+                gViewer1.Graph.AddNode(tmp);
+            }
+            for (int i = 4; i < nodes.Length; i++)
+            {
+                Node tmp = gViewer1.Graph.FindNode(nodes[i]);
+                if (tmp == null)
+                {
+                    return;
+                }
+                tmp.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Red;
+                gViewer1.Graph.AddNode(tmp);
+            }
         }
     }
     public class GrafMatriks
@@ -402,19 +426,19 @@ namespace DesktopApp2
         }
         public void addToJalur(int _s)
         {
-            jalur =  Convert.ToString(_s+1) +" "+jalur;
+            jalur =  Convert.ToString(_s+1) +' '+jalur;
         }
         public void addListJalur(string _jalur)
         {
-            jalur = jalur + " " + _jalur;
+            jalur = jalur + ' ' + _jalur;
         }
         public void removeJalur()
         {
             string[] tmp = jalur.Split(' ');
             string stmp = "";
-            for (int i = 0; i < tmp.Length-1; i++)
+            for (int i = 0; i < tmp.Length; i++)
             {
-                stmp += tmp[i];
+                stmp +=tmp[i] +' ';
             }
             jalur = stmp;
         }

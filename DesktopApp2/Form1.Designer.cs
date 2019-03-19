@@ -174,6 +174,8 @@ namespace DesktopApp2
             this.ListBox.Name = "ListBox";
             this.ListBox.Size = new System.Drawing.Size(293, 173);
             this.ListBox.TabIndex = 13;
+            this.ListBox.SelectedIndexChanged += new System.EventHandler(this.ListBox_SelectedIndexChanged);
+            this.ListBox.SelectedValueChanged += new System.EventHandler(this.UpdateGraph);
             // 
             // label2
             // 
