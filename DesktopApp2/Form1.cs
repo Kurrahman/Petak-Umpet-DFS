@@ -41,7 +41,7 @@ namespace DesktopApp2
             }
             else
             {
-                ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + " TIDAK");
+                ListBox.Items.Add(a + ' ' + b + ' ' + c + " TIDAK");
             }
         } 
 
@@ -71,6 +71,7 @@ namespace DesktopApp2
             string filename = openFileDialog1.FileName;
             string[] filelines = File.ReadAllLines(filename);
             // Inisialisasi Graph
+            //gViewer1.CurrentLayoutMethod = LayoutMethod.MDS;
             graph = new Graph("graph");
             grafMatriks = new GrafMatriks(Convert.ToInt32(filelines[0].Trim()));
             initComboBox(Convert.ToInt32(filelines[0].Trim()));
@@ -88,6 +89,7 @@ namespace DesktopApp2
                 grafMatriks.setGraf(row,col,true);
             }
             gViewer1.Graph = graph;
+            grafMatriks.initDistance(0, 0);
         }
 
         private void inputClick(object sender, EventArgs e)
@@ -114,24 +116,24 @@ namespace DesktopApp2
             }
             // Menyiapkan file untuk dibaca
             string filename = openFileDialog1.FileName;
+            InputDir.Text = filename;
             string[] filelines = File.ReadAllLines(filename);
+            ListBox.Items.Clear();
             // Queries
             for (int i = 1; i < filelines.Length; i++)
             {
-                int dir = Convert.ToInt32(filelines[i].Split(' ')[0]);
-                int jose = Convert.ToInt32(filelines[i].Split(' ')[1])-1;
-                int ferd = Convert.ToInt32(filelines[i].Split(' ')[2])-1;
-                string a = Convert.ToString(dir);
-                string b = Convert.ToString(jose+1);
-                string c = Convert.ToString(ferd+1);
+                string[] tmps = filelines[i].Split(' ');
+                int dir = Convert.ToInt32(tmps[0]);
+                int jose = Convert.ToInt32(tmps[1]) - 1;
+                int ferd = Convert.ToInt32(tmps[2]) - 1;
                 Ways tmp = grafMatriks.solve(dir, jose, ferd);
                 if (tmp.getPass())
                 {
-                    ListBox.Items.Add(a + ' ' + b + ' ' + c + " YA " + tmp.getJalur());
+                    ListBox.Items.Add(tmps[0] + ' ' + tmps[1] + ' ' + tmps[2] + " YA " + tmp.getJalur());
                 }
                 else
                 {
-                    ListBox.Items.Add(a + ' ' + b + ' ' + c + ' ' + " TIDAK");
+                    ListBox.Items.Add(tmps[0] + ' ' + tmps[1] + ' ' + tmps[2] + ' ' + " TIDAK");
                 }
             }
         }
@@ -183,11 +185,30 @@ namespace DesktopApp2
                 gViewer1.Graph.AddNode(tmp);
             }
         }
+
+        private void Export(object sender, EventArgs e)
+        {
+            string[] path = InputDir.Text.Split('\\');
+            string filename = path[0];
+            for (int i = 1; i < path.Length-1; i++)
+            {
+                filename += '\\' + path[i];
+            }
+            filename += '\\' + "Output.txt";
+
+            string[] lines = new string[ListBox.Items.Count];
+            for (int i = 0; i < ListBox.Items.Count; i++)
+            {
+                lines[i] = ListBox.Items[i].ToString();
+            }
+            File.WriteAllLines(filename, lines);
+        }
     }
     public class GrafMatriks
     {
         private bool[][] graph;
         private int size;
+        private int[] distance;
 
         public Ways solve(int dir, int jose, int ferd)
         {
@@ -223,7 +244,7 @@ namespace DesktopApp2
                         if (neighbor(ferd, i))
                         {
                             setGraf(ferd, i, false);
-                            if (canReachThrough(ferd, i, 0))
+                            if (distance[ferd] > distance[i])
                             {
                                 inpw = solveTowards(jose, i);
                                 inpw.removeJalur();
@@ -264,7 +285,7 @@ namespace DesktopApp2
                         if (neighbor(ferd, i))
                         {
                             setGraf(ferd, i, false);
-                            if (!canReachThrough(ferd, i, 0))
+                            if (distance[ferd] < distance[i])
                             {
                                 inpw = solveAway(jose, i);
                                 inpw.removeJalur();
@@ -284,36 +305,6 @@ namespace DesktopApp2
                 {
                     return inpw;
                 }
-            }
-        }
-
-        public bool canReachThrough(int node1, int node2, int target)
-        {
-            if (haveNeighbor(node2))
-            {
-                if (neighbor(node2, target))
-                {
-                    return true;
-                }
-                else
-                {
-                    bool flag = false;
-                    for(int i = 0; i < size; i++)
-                    {
-                        if (neighbor(node2, i) && (node1 != i))
-                        {
-                            if (canReachThrough(node2, i, target))
-                            {
-                                flag = true;
-                            }
-                        }
-                    }
-                    return flag;
-                }
-            }
-            else
-            {
-                return false;
             }
         }
 
@@ -353,6 +344,24 @@ namespace DesktopApp2
             for (int i = 0; i < size; i++)
             {
                 graph[i] = new bool[i];
+            }
+            distance = new int[size];
+        }
+
+        public void initDistance(int node, int depth)
+        {
+            distance[node] = depth;
+            if (haveNeighbor(node))
+            {
+                for (int i = 0; i < distance.Length; i++)
+                {
+                    if (neighbor(node, i))
+                    {
+                        setGraf(node, i, false);
+                        initDistance(i, depth + 1);
+                        setGraf(node, i, true);
+                    }
+                }
             }
         }
 

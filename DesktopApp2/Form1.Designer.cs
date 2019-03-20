@@ -28,7 +28,7 @@ namespace DesktopApp2
         /// </summary>
         private void InitializeComponent()
         {
-            Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation planeTransformation2 = new Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation();
+            Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation planeTransformation1 = new Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation();
             this.askbutton = new System.Windows.Forms.Button();
             this.Browse = new System.Windows.Forms.Button();
             this.FileDir = new System.Windows.Forms.TextBox();
@@ -42,11 +42,12 @@ namespace DesktopApp2
             this.ListBox = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // askbutton
             // 
-            this.askbutton.Location = new System.Drawing.Point(561, 89);
+            this.askbutton.Location = new System.Drawing.Point(561, 65);
             this.askbutton.Margin = new System.Windows.Forms.Padding(2);
             this.askbutton.Name = "askbutton";
             this.askbutton.Size = new System.Drawing.Size(76, 23);
@@ -57,7 +58,7 @@ namespace DesktopApp2
             // 
             // Browse
             // 
-            this.Browse.Location = new System.Drawing.Point(562, 41);
+            this.Browse.Location = new System.Drawing.Point(563, 22);
             this.Browse.Name = "Browse";
             this.Browse.Size = new System.Drawing.Size(75, 23);
             this.Browse.TabIndex = 4;
@@ -67,7 +68,7 @@ namespace DesktopApp2
             // 
             // FileDir
             // 
-            this.FileDir.Location = new System.Drawing.Point(343, 41);
+            this.FileDir.Location = new System.Drawing.Point(344, 22);
             this.FileDir.Name = "FileDir";
             this.FileDir.Size = new System.Drawing.Size(200, 20);
             this.FileDir.TabIndex = 5;
@@ -75,7 +76,7 @@ namespace DesktopApp2
             // FerdiantStart
             // 
             this.FerdiantStart.FormattingEnabled = true;
-            this.FerdiantStart.Location = new System.Drawing.Point(483, 91);
+            this.FerdiantStart.Location = new System.Drawing.Point(483, 67);
             this.FerdiantStart.Name = "FerdiantStart";
             this.FerdiantStart.Size = new System.Drawing.Size(60, 21);
             this.FerdiantStart.TabIndex = 6;
@@ -84,7 +85,7 @@ namespace DesktopApp2
             // JoseAddress
             // 
             this.JoseAddress.FormattingEnabled = true;
-            this.JoseAddress.Location = new System.Drawing.Point(413, 91);
+            this.JoseAddress.Location = new System.Drawing.Point(413, 67);
             this.JoseAddress.Name = "JoseAddress";
             this.JoseAddress.Size = new System.Drawing.Size(60, 21);
             this.JoseAddress.TabIndex = 7;
@@ -96,7 +97,7 @@ namespace DesktopApp2
             this.Direction.Items.AddRange(new object[] {
             "1",
             "0"});
-            this.Direction.Location = new System.Drawing.Point(343, 91);
+            this.Direction.Location = new System.Drawing.Point(343, 67);
             this.Direction.Name = "Direction";
             this.Direction.Size = new System.Drawing.Size(60, 21);
             this.Direction.TabIndex = 8;
@@ -135,7 +136,7 @@ namespace DesktopApp2
             this.gViewer1.TabIndex = 9;
             this.gViewer1.TightOffsetForRouting = 0.125D;
             this.gViewer1.ToolBarIsVisible = true;
-            this.gViewer1.Transform = planeTransformation2;
+            this.gViewer1.Transform = planeTransformation1;
             this.gViewer1.UndoRedoButtonsVisible = true;
             this.gViewer1.WindowZoomButtonPressed = false;
             this.gViewer1.ZoomF = 1D;
@@ -143,14 +144,14 @@ namespace DesktopApp2
             // 
             // InputDir
             // 
-            this.InputDir.Location = new System.Drawing.Point(344, 119);
+            this.InputDir.Location = new System.Drawing.Point(344, 95);
             this.InputDir.Name = "InputDir";
             this.InputDir.Size = new System.Drawing.Size(200, 20);
             this.InputDir.TabIndex = 10;
             // 
             // Input
             // 
-            this.Input.Location = new System.Drawing.Point(562, 117);
+            this.Input.Location = new System.Drawing.Point(562, 93);
             this.Input.Name = "Input";
             this.Input.Size = new System.Drawing.Size(75, 23);
             this.Input.TabIndex = 11;
@@ -161,7 +162,7 @@ namespace DesktopApp2
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(349, 75);
+            this.label1.Location = new System.Drawing.Point(349, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 12;
@@ -170,7 +171,7 @@ namespace DesktopApp2
             // ListBox
             // 
             this.ListBox.FormattingEnabled = true;
-            this.ListBox.Location = new System.Drawing.Point(344, 173);
+            this.ListBox.Location = new System.Drawing.Point(345, 140);
             this.ListBox.Name = "ListBox";
             this.ListBox.Size = new System.Drawing.Size(293, 173);
             this.ListBox.TabIndex = 13;
@@ -180,7 +181,7 @@ namespace DesktopApp2
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(348, 25);
+            this.label2.Location = new System.Drawing.Point(349, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
             this.label2.TabIndex = 14;
@@ -189,17 +190,28 @@ namespace DesktopApp2
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(349, 157);
+            this.label3.Location = new System.Drawing.Point(349, 124);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(42, 13);
             this.label3.TabIndex = 15;
             this.label3.Text = "Answer";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(517, 323);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(121, 23);
+            this.button1.TabIndex = 16;
+            this.button1.Text = "Export To File";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Export);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(650, 358);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.ListBox);
@@ -235,6 +247,7 @@ namespace DesktopApp2
         private System.Windows.Forms.ListBox ListBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button1;
     }
 }
 
